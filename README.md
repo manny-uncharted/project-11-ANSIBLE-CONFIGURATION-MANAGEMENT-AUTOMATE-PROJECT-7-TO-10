@@ -1,1 +1,3 @@
-# project-11-ANSIBLE-CONFIGURATION-MANAGEMENT-AUTOMATE-PROJECT-7-TO-10
+# Project 11: ANSIBLE CONFIGURATION MANAGEMENT AUTOMATE PROJECT 7 TO 10.
+
+In this project, we would be configuring Ansible Client as a Bastion Host also known as Jump Server. A Jump server is an intermediary server through which access to the internal network can be provided. If we should consider the current architecture being worked on, the web servers are always inside a secure network which cannot be reached directly from the internet
