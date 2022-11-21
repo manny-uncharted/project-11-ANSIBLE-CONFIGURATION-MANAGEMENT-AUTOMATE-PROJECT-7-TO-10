@@ -7,6 +7,7 @@
 - [Prepare your development environment using Visual Studio Code](#prepare-your-development-environment-using-visual-studio-code)
 - [Begin Ansible Development](#begin-ansible-development)
 - [Set up an Ansible inventory](#set-up-an-ansible-inventory)
+- [Create a Common Ansible Playbook](#create-a-common-ansible-playbook)
 
 
 ## Introduction
@@ -125,4 +126,89 @@ Results:
 
 
 ## Set up an Ansible inventory
-An Ansible inventory file defines the hosts and groups of hosts upon which commands, modules, and tasks in a playbook operate. Since our intention is to execute Linux commands on remote hosts, and ensure that it is the intended configuration on a particular server that occurs. It is important to have a way to organize our hosts in such an Inventory.
+An Ansible inventory file defines the hosts and groups of hosts upon which commands, modules, and tasks in a playbook operate. Since our intention is to execute Linux commands on remote hosts and ensure that it is the intended configuration on a particular server that occurs. It is important to have a way to organize our hosts in such an Inventory.
+
+To learn how to setup SSH agent and connect VS Code to your Jenkins-Ansible instance, see the video below:
+
+- For Windows users - <a href="https://youtu.be/OplGrY74qog">Set up SSH agent on Windows</a>
+- For Linux users - <a href="https://youtu.be/OplGrY74qog">Set up SSH agent on Linux</a>
+
+- Add your private key to the SSH agent
+```
+ssh-add <path-to-private-key>
+```
+
+- Now you confirm that your key has been added to the SSH agent
+```
+ssh-add -l
+```
+
+Results:
+![ssh-add](img/ssh-add.png)
+
+- Now you can connect to your Jenkins-Ansible instance from VS Code using SSH agent. To do this, click on the green icon on the bottom left corner of VS Code and select `Remote-SSH: Connect to Host...` and select your Jenkins-Ansible instance. Before this in the video on setting up SSH-agent, we've set up our ssh config host file to contain the URL to the Jenkins-ansible instance.
+
+Note: For ubuntu instances, the username is ubuntu and for RHEL-based instances, the username is ec2-user.
+
+
+- Update the inventory/dev.yml file with a snippet of code
+```
+[nfs]
+<NFS-Server-Private-IP-Address> ansible_ssh_user='ec2-user'
+
+[webservers]
+<Web-Server1-Private-IP-Address> ansible_ssh_user='ec2-user'
+<Web-Server2-Private-IP-Address> ansible_ssh_user='ec2-user'
+
+[db]
+<Database-Private-IP-Address> ansible_ssh_user='ec2-user' 
+
+[lb]
+<Load-Balancer-Private-IP-Address> ansible_ssh_user='ubuntu'
+```
+
+Results:
+
+![inventory-dev](img/inventory-dev.png)
+
+
+## Create a Common Ansible Playbook
+
+At this stage of the project, it is time to start giving Ansible the instructions on what we need to be performed on all servers listed in inventory/dev.
+
+In the common.yml playbook, we would write configuration for repeatable, reusable, and multi-machine tasks that is common to systems within the infrastructure.
+
+- Update your playbooks/common.yml file with a snippet of code
+```
+- name: update web, nfs and db servers
+  hosts: webservers, nfs, db
+  remote_user: ec2-user
+  become: yes
+  become_user: root
+  tasks:
+    - name: ensure wireshark is at the latest version
+      yum:
+        name: wireshark
+        state: latest
+
+- name: update LB server
+  hosts: lb
+  remote_user: ubuntu
+  become: yes
+  become_user: root
+  tasks:
+    - name: Update apt repo
+      apt: 
+        update_cache: yes
+
+    - name: ensure wireshark is at the latest version
+      apt:
+        name: wireshark
+        state: latest
+```
+
+Results:
+
+![playbook](img/common-playbook.png)
+
+Note: The code above is divided into two parts, each of which is intended to perform the same task: which is installing the Wireshark utility on RHEL 8 and Ubuntu servers. It uses root user to perform this task and the respective package manager: yum for RHEL 8 and apt for Ubuntu.
