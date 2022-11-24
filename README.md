@@ -211,4 +211,38 @@ Results:
 
 ![playbook](img/common-playbook.png)
 
-Note: The code above is divided into two parts, each of which is intended to perform the same task: which is installing the Wireshark utility on RHEL 8 and Ubuntu servers. It uses root user to perform this task and the respective package manager: yum for RHEL 8 and apt for Ubuntu.
+Note: The code above is divided into two parts, each of which is intended to perform the same task: which is installing the Wireshark utility on RHEL 8 and Ubuntu servers. It uses the root user to perform this task and the respective package manager: yum for RHEL 8 and apt for Ubuntu.
+
+- Now we would update this playbook with the following tasks:
+  - Create a directory and a file inside it.
+  - Change the timezone on all servers.
+  - Run some shell script.
+
+```
+- name: update web, nfs and db servers
+  hosts: webservers, nfs, db
+  remote_user: ec2-user
+  become: yes
+  become_user: root
+  tasks:
+    - name: ensure wireshark is at the latest version
+      yum:
+        name: wireshark
+        state: latest
+
+    - name: create a directory
+      file:
+        path: /home/ec2-user/test
+        state: directory
+
+    - name: create a file
+      file:
+        path: /home/ec2-user/test/test.txt
+        state: touch
+
+    - name: change timezone
+      command: timedatectl set-timezone Africa/Lagos
+
+    - name: run a shell script
+      shell: |
+        echo "Hello World" > /home/ec2-user/test/test.txt
