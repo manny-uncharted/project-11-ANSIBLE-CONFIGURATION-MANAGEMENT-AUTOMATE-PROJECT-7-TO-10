@@ -246,3 +246,8 @@ Note: The code above is divided into two parts, each of which is intended to per
     - name: run a shell script
       shell: |
         echo "Hello World" > /home/ec2-user/test/test.txt
+```
+
+Results:
+
+![playbook](img/common-playbook-2.png)
