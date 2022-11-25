@@ -8,6 +8,8 @@
 - [Begin Ansible Development](#begin-ansible-development)
 - [Set up an Ansible inventory](#set-up-an-ansible-inventory)
 - [Create a Common Ansible Playbook](#create-a-common-ansible-playbook)
+- [Update git with your changes](#update-git-with-your-changes)
+- [Run First Ansible Test](#run-first-ansible-test)
 
 
 ## Introduction
@@ -30,6 +32,7 @@ In this project, we would develop Ansible scripts to simulate the use of a Jump 
 - Load Balancer: Ubuntu 20.04 (Nginx).
 - Jenkins Server.
 - Configure Ansible.
+- Source Code: Download from <a href="https://github.com/manny-uncharted/ansible-config-mgt.git">here</a>.
 
 ## Install and configure Ansible on an EC2 instance.
 For this tutorial, we would be making use of our Jenkins server to configure Ansible.
@@ -251,3 +254,85 @@ Note: The code above is divided into two parts, each of which is intended to per
 Results:
 
 ![playbook](img/common-playbook-2.png)
+
+
+
+## Update git with your changes
+
+At the moment all our directories and files are local to our machine. We need to push them to our remote repository on GitHub.
+
+As in the real world, we would be working with a team of developers. So, it is important to have a way to collaborate with your team members. This is where Git comes in. Git is a version control system that allows you to keep track of your code and collaborate with your team members.
+
+If you recall earlier we created a Github repository for this project and stated that all our changes should be made in new branches. So, we would create a new branch and push our changes to it.
+
+- use git commands to add, commit and push your changes to the branch you created earlier.
+
+```
+git status
+git add .
+git commit -m "update common playbook"
+git push origin <branch-name>
+```
+
+Results:
+
+![git](img/git.png)
+
+- Now you can go to your GitHub repository and confirm that your changes have been pushed to the branch you created earlier and create a pull request.
+
+Results:
+
+![git](img/git-2.png)
+
+- When working with other developers in a team, when every developer is done with their changes, they would create a pull request and the team lead would review the changes and merge the pull request to the main branch. And if the team leader is satisfied with the changes, they would merge the pull request to the main branch.
+
+We would be acting as the reviewer in this project. So, we would review the pull request and merge it to the main branch.
+
+Results:
+
+![git](img/git-3.png)
+
+- Now head back on your terminal, checkout from the feature branch into master and pull the latest changes.
+
+```
+git checkout main
+```
+
+Results:
+
+![git](img/git-4.png)
+
+- Once your code changes appear in the main branch Jenkins will do its job and save all the files (build artifacts) to 
+```
+/var/lib/jenkins/jobs/ansible/builds/<build_number>/archive/
+```
+directory on Jenkins-Ansible server.
+
+Results:
+
+![git](img/jenkins.png)
+
+
+## Run First Ansible Test
+Now it is time to execute ansible-playbook command and verify that the playbook is working as expected.
+
+- SSH into your Jenkins-Ansible server and run the following command
+```
+cd ansible-config-mgt
+ansible-playbook -i inventory/dev.yml playbooks/common.yml
+```
+
+Results:
+
+![ansible](img/ansible.png)
+
+- To confirm whether all the installations were successful, SSH into your servers and run the following commands
+```
+wireshark --version
+```
+
+Results:
+
+![ansible](img/wireshark.png)
+
+Now we've successfully been able to configure ansible as a bastion host and run a playbook on all servers in our infrastructure.
