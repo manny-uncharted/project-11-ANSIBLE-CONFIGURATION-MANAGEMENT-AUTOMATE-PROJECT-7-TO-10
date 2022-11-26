@@ -1,6 +1,6 @@
 # Project 11: ANSIBLE CONFIGURATION MANAGEMENT AUTOMATE PROJECT 7 TO 10.
 
-## Table of Contents
+## Table of Contents.
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Install and configure Ansible on an EC2 instance](#install-and-configure-ansible-on-an-ec2-instance)
